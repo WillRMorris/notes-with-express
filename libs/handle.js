@@ -5,7 +5,7 @@ const helper = {
 //reads db file and returns the file parsed into json.
     async read() {
         return new Promise((resolve) => {
-             fs.readFile('../db/db.json', (err, data)=> {
+             fs.readFile('./db/db.json', (err, data)=> {
                 if (err){
                     console.log(err)
                 } else {
@@ -20,7 +20,7 @@ const helper = {
 //writes file with info to the db file
     async write(file) {
         return new Promise((resolve) => {
-            fs.writeFile('../db/db.json', JSON.stringify(file), (err, data)=> {
+            fs.writeFile('./db/db.json', JSON.stringify(file), (err, data)=> {
                 if (err){
                     console.log(err)
                 } else {
@@ -52,6 +52,7 @@ async function delNote(noteID) {
   let index = locateobj(file, noteID);
   file.splice(index, 1);
   let written= await helper.write(file);
+  console.log (`file ${noteID} has been deleted`)
   return written;
 
     
@@ -61,6 +62,7 @@ async function addNote(note) {
     let file =  await helper.read();
     file.push(note);
     let written= await helper.write(file);
+    console.log (`file ${note.id} has been added to the database`)
     return written;
 }
 
@@ -75,5 +77,6 @@ module.exports = {
     delNote,
     addNote,
     clearNotes,
+    helper
 
 }
