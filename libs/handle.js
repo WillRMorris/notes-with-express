@@ -9,7 +9,7 @@ const helper = {
                 if (err){
                     console.log(err)
                 } else {
-                    let file =JSON.parse(data)
+                    let file =JSON.parse(data);
                     resolve(file);
                     
                 }
@@ -49,7 +49,7 @@ const helper = {
 //reads the file, grabs the index of the obj with the correct body value, removes that obj and rewrites the file
 async function delNote(noteID) {
   let file =  await helper.read();
-  let index = locateobj(file, noteID);
+  let index = helper.locateobj(file, noteID);
   file.splice(index, 1);
   let written= await helper.write(file);
   console.log (`file ${noteID} has been deleted`)
@@ -60,6 +60,7 @@ async function delNote(noteID) {
 //reads the file, pushes the new note into the object then rewrites the file
 async function addNote(note) {
     let file =  await helper.read();
+    file = (file);
     file.push(note);
     let written= await helper.write(file);
     console.log (`file ${note.id} has been added to the database`)

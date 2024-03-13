@@ -1,23 +1,22 @@
 const api = require('express').Router();
-const { response } = require('express');
 const handle = require('../libs/handle');
-const helper = handle.helper
-
-
-//parsers for json and encodedd urls
-// api.use(express.json());
-// api.use(express.urlencoded({ extended: true }));
+const helper = handle.helper;
 
 api.get('/notes', (req, res) => {
-let notes= helper.read();
-res.json(notes);
+    console.info(`${req.method} request recieved`);
+helper.read().then((file)=>{
+    console.log(file)
+    res.json(file);
+})
 
 });
 
 
 api.post('/notes', (req, res) => {
+    console.info(`${req.method} request recieved`);
     if(req.body && req.body.title && req.body.text && req.body.id){
         let note = req.body;
+        console.log(note);
         handle.addNote(note);
         response = {
             staus: 'sucess',
@@ -32,7 +31,8 @@ api.post('/notes', (req, res) => {
 });
 
 
-api.delete('/notes', (req, res) => {
+api.delete('/notes/:id', (req, res) => {
+    console.info(`${req.method} request recieved`);
     if (req.params.id){
         handle.delNote(req.params.id);
         response = {

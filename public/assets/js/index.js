@@ -1,13 +1,14 @@
 
 
 
+
 let noteForm;
 let noteTitle;
 let noteText;
 let saveNoteBtn;
 let newNoteBtn;
 let noteList;
-
+debugger;
 
 if (window.location.pathname === '/notes') {
   noteForm = document.querySelector('.note-form');
@@ -32,14 +33,23 @@ const hide = (elem) => {
 // activeNote is used to keep track of the note in the textarea
 let activeNote = {};
 
-const getNotes = () =>
+const getNotes = async () => {
+return new Promise ((resolve) => {
+
   fetch('/api/notes', {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json'
     }
-  });
-
+  }).then((response) =>{
+    return response.json();
+  })
+  .then( (data) =>{
+    console.log(data);
+    resolve(data);
+  })
+})
+}
 const saveNote = (note) =>
   fetch('/api/notes', {
     method: 'POST',
@@ -80,7 +90,7 @@ const handleNoteSave = () => {
   const newNote = {
     title: noteTitle.value,
     text: noteText.value,
-    id: uid()
+    id: uid(),
   };
   saveNote(newNote).then(() => {
     getAndRenderNotes();
@@ -133,8 +143,8 @@ const handleRenderBtns = () => {
 };
 
 // Render the list of note titles
-const renderNoteList = async (notes) => {
-  let jsonNotes = await notes.json();
+const renderNoteList = (notes) => {
+  let jsonNotes = notes;
   if (window.location.pathname === '/notes') {
     noteList.forEach((el) => (el.innerHTML = ''));
   }
@@ -173,13 +183,14 @@ const renderNoteList = async (notes) => {
   if (jsonNotes.length === 0) {
     noteListItems.push(createLi('No saved Notes', false));
   }
-
-  for(let note in jsonNotes) {
+  
+  jsonNotes.forEach( (note) =>{
     const li = createLi(note.title);
     li.dataset.note = JSON.stringify(note);
-
+    
     noteListItems.push(li);
-  };
+  }
+    )
 
   if (window.location.pathname === '/notes') {
     noteListItems.forEach((note) => noteList[0].append(note));
@@ -187,7 +198,9 @@ const renderNoteList = async (notes) => {
 };
 
 // Gets notes from the db and renders them to the sidebar
-const getAndRenderNotes = () => getNotes().then(renderNoteList);
+const getAndRenderNotes = () => getNotes().then((data) =>{
+  renderNoteList(data);
+});
 
 if (window.location.pathname === '/notes') {
   saveNoteBtn.addEventListener('click', handleNoteSave);
